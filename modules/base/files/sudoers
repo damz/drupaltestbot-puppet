@@ -1,0 +1,7 @@
+Defaults	env_reset, !lecture, env_keep="SSH_AUTH_SOCK", always_set_home
+
+# root can always sudo.
+root	ALL=(ALL) ALL
+
+# Members of the sudo group can sudo everywhere.
+%sudo	ALL=(ALL) ALL

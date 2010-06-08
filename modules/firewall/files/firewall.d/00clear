@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Set policies to accept
+$IPTABLES -P INPUT ACCEPT
+$IPTABLES -P OUTPUT ACCEPT
+$IPTABLES -P FORWARD ACCEPT
+
+# Flush rules from all filter chains
+$IPTABLES -F
+
+# Delete user-added chains
+$IPTABLES -X

@@ -1,0 +1,7 @@
+# Path to iptables
+IPTABLES=/sbin/iptables
+
+# Interfaces
+EXTERNAL=eth0
+INTERNAL=eth1
+LOCAL=lo

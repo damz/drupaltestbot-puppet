@@ -1,0 +1,53 @@
+#!/bin/bash
+# firewall          Start/Stop the firewall using iptables
+#
+# Originally from Eric Searcy (emsearcy@osuosl.org).
+
+# Path to iptables.
+IPTABLES=/sbin/iptables
+
+# Interfaces.
+EXTERNAL=eth0
+INTERNAL=eth1
+LOCAL=lo
+
+# Get settings.
+[ -f /etc/default/firewall ] && . /etc/default/firewall
+
+# Export variables to the run-parts scripts.
+export IPTABLES EXTERNAL INTERNAL LOCAL
+
+RETVAL=0
+RUNPARTS="/bin/run-parts -v"
+RULES="/etc/firewall.d/"
+
+start() {
+    echo -n "Initializing firewall: "
+    $RUNPARTS $RULES
+    RETVAL=$?
+    echo
+}
+
+stop() {
+    echo -n "Stopping firewall: "
+    $RULES/00clear
+    RETVAL=$?
+    echo
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo $"Usage $0 {start|stop|restart}"
+        RETVAL=3
+esac
+exit $RETVAL

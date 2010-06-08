@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Set policies to drop incoming packets
+$IPTABLES -P INPUT DROP
+
+# Don't forward anything
+$IPTABLES -P FORWARD DROP
+
+# Let in packets from existing connections
+$IPTABLES -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+$IPTABLES -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# Allow localhost
+$IPTABLES -A INPUT -i $LOCAL -j ACCEPT
+
+# Spoofed packets
+$IPTABLES -A INPUT -m state --state INVALID -j DROP
+$IPTABLES -A OUTPUT -m state --state INVALID -j DROP
+
+# Allow ICMP pings and time exceeded messages
+$IPTABLES -A INPUT -p icmp -s 0/0 --icmp-type echo-request -j ACCEPT
+$IPTABLES -A INPUT -p icmp -s 0/0 --icmp-type time-exceeded -j ACCEPT
