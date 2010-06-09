@@ -4,7 +4,7 @@ class base {
   include "base::apt"
 
   Package {
-    require => [ Exec["apt-update"] ],
+    require => [ Base::Apt::Repository["lenny"], Base::Apt::Repository["backports"], Base::Apt::Repository["drupal.org"] ],
   }
 
   base::apt::repository { "lenny":
