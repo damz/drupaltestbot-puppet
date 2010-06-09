@@ -51,7 +51,7 @@ class testing_bot {
   # Perform the initial backup of the database once MySQL has been installed.
   exec { "initial-backup":
     path        => "/usr/bin:/bin:/usr/sbin:/sbin",
-    command     => "/etc/init.d/mysql stop && cp -a /var/lib/mysql /tmpfs/mysql && touch /tmpfs/.backup-done && /etc/init.d/mysql start",
+    command     => "/etc/init.d/mysql stop && cp -a /var/lib/mysql /tmpfs/mysql && touch /tmpfs/.backup-done && /etc/init.d/disk-backup stop && /etc/init.d/mysql start",
     creates     => "/tmpfs/.backup-done",
     require     => [ Package["mariadb-server-5.1"], Mount["/tmpfs"], File["/etc/init.d/disk-backup"] ]
   }
