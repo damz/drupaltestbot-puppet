@@ -2,6 +2,7 @@
 class mysql {
   package { "maatkit":
     ensure => present,
+    require => Base::Apt::Repository["drupal.org"],
   }
 
   class server {
