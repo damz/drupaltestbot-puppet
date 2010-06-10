@@ -31,11 +31,15 @@ class testing_bot {
   }
 
   # Backup some important data to disk.
+  package { "rsync":
+    ensure => present,
+  }
   file { "/etc/init.d/disk-backup":
     owner   => root,
     group   => root,
     mode    => 755,
     source  => "puppet://$servername/modules/testing_bot/disk-backup",
+    require => Package["rsync"],
     notify  => Exec["install-disk-backup"],
   }
   exec { "install-disk-backup":
