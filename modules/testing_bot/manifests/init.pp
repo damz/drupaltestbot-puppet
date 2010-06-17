@@ -52,24 +52,6 @@ class testing_bot {
   # environment because the test client itself needs that.
   include "mysql::server"
 
-  # Perform the initial backup of the database once MySQL has been installed.
-  exec { "initial-backup":
-    path        => "/usr/bin:/bin:/usr/sbin:/sbin",
-    command     => "/etc/init.d/mysql stop && cp -a /var/lib/mysql /tmpfs/mysql && touch /tmpfs/.backup-done && /etc/init.d/disk-backup stop && /etc/init.d/mysql start",
-    creates     => "/tmpfs/.backup-done",
-    require     => [ Package["mariadb-server-5.1"], Mount["/tmpfs"], File["/etc/init.d/disk-backup"] ]
-  }
-
-  # Move MySQL's data directory to the tmpfs.
-  file { "/etc/mysql/conf.d/tmpfs.cnf":
-    owner   => root,
-    group   => root,
-    mode    => 755,
-    source  => "puppet://$servername/modules/testing_bot/mysql-tmpfs.cnf",
-    require => Exec["initial-backup"],
-    notify  => Service["mysql"],
-  }
-
   package { ["drupaltestbot", "drush", "apache2", "libapache2-mod-php5", "curl", "cvs"]:
     ensure => present,
     require => [ Base::Apt::Repository["drupal.org"], Base::Apt::Repository["php53"], Service["mysql"] ],
@@ -119,6 +101,24 @@ class testing_bot {
   }
 
   class mysql {
+    # Move MySQL's data directory to the tmpfs.
+    file { "/etc/mysql/conf.d/tmpfs.cnf":
+      owner   => root,
+      group   => root,
+      mode    => 755,
+      source  => "puppet://$servername/modules/testing_bot/mysql-tmpfs.cnf",
+      require => Exec["initial-backup"],
+      notify  => Service["mysql"],
+    }
+
+    # Perform the initial backup of the database once MySQL has been installed.
+    exec { "initial-backup":
+      path        => "/usr/bin:/bin:/usr/sbin:/sbin",
+      command     => "/etc/init.d/mysql stop && cp -a /var/lib/mysql /tmpfs/mysql && touch /tmpfs/.backup-done && /etc/init.d/disk-backup stop && /etc/init.d/mysql start",
+      creates     => "/tmpfs/.backup-done",
+      require     => [ Package["mariadb-server-5.1"], Mount["/tmpfs"], File["/etc/init.d/disk-backup"] ]
+    }
+
     package { "drupaltestbot-mysql":
       ensure => present,
       require => [ Base::Apt::Repository["drupal.org"], Service["mysql"] ]
@@ -126,6 +126,9 @@ class testing_bot {
   }
 
   class pgsql {
+    # Install and tune the server itself (on tmpfs)
+    include "pgsql::server"
+
     package { "drupaltestbot-pgsql":
       ensure => present,
       require => Base::Apt::Repository["drupal.org"],
