@@ -33,6 +33,7 @@ class testing_bot {
   # Backup some important data to disk.
   package { "rsync":
     ensure => present,
+    require => Base::Apt::Repository["lenny"]
   }
   file { "/etc/init.d/disk-backup":
     owner   => root,
@@ -54,7 +55,7 @@ class testing_bot {
 
   package { ["drupaltestbot", "drush", "apache2", "libapache2-mod-php5", "curl", "cvs"]:
     ensure => present,
-    require => [ Base::Apt::Repository["drupal.org"], Base::Apt::Repository["php53"], Service["mysql"] ],
+    require => [ Base::Apt::Repository["lenny"], Base::Apt::Repository["drupal.org"], Base::Apt::Repository["php53"], Service["mysql"] ],
   }
 
   # Drush needs to run one time as root to download its prerequisites from PEAR.
@@ -128,6 +129,12 @@ class testing_bot {
   class pgsql {
     # Install and tune the server itself (on tmpfs)
     include "pgsql::server"
+
+    package { "php5-pgsql":
+      ensure => present,
+      require => Base::Apt::Repository["php53"],
+      notify => Service["apache2"],
+    }
 
     package { "drupaltestbot-pgsql":
       ensure => present,
