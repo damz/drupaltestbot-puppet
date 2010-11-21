@@ -1,6 +1,15 @@
 # Parent class for all systems.
 # Configure APT repositories and ensure freshness of packages.
 class base {
+
+  # Enable 100% puppet management.
+  file { "/etc/puppet/puppet.conf":
+    source => "puppet:///modules/base/puppet.conf",
+  }
+  file { "/etc/default/puppet":
+    source => "puppet:///modules/base/puppet-default",
+  }
+
   include "base::apt"
 
   Package {
@@ -8,24 +17,24 @@ class base {
   }
 
   base::apt::repository { "lenny":
-    repository_source => "puppet://$servername/modules/base/lenny.sources.list",
+    repository_source => "puppet:///modules/base/lenny.sources.list",
   }
 
   base::apt::repository { "backports":
-    repository_source => "puppet://$servername/modules/base/backports.sources.list",
-    key_source => "puppet://$servername/modules/base/backports.public.key",
+    repository_source => "puppet:///modules/base/backports.sources.list",
+    key_source => "puppet:///modules/base/backports.public.key",
     key_id => "16BA136C",
   }
 
   base::apt::repository { "drupal.org":
-    repository_source => "puppet://$servername/modules/base/drupal.sources.list",
-    key_source => "puppet://$servername/modules/base/drupal.public.key",
+    repository_source => "puppet:///modules/base/drupal.sources.list",
+    key_source => "puppet:///modules/base/drupal.public.key",
     key_id => "A19A51A2",
   }
 
   # MOTD configuration.
   file { "/etc/motd.tail":
-    source => "puppet://$servername/modules/base/motd.tail",
+    source => "puppet:///modules/base/motd.tail",
   }
 
   # Firewall configuration.
@@ -33,12 +42,12 @@ class base {
 
   # Locales configuration.
   file { "/etc/locale.gen":
-    source => "puppet://$servername/modules/base/locales/locale.gen",
+    source => "puppet:///modules/base/locales/locale.gen",
     require => Package["locales"],
     notify => Exec["locale-gen"],
   }
   file { "/etc/default/locale":
-    source => "puppet://$servername/modules/base/locales/locale",
+    source => "puppet:///modules/base/locales/locale",
     require => Package["locales"],
   }
   exec { "locale-gen":
@@ -53,7 +62,7 @@ class base {
     owner   => root,
     group   => root,
     mode    => 644,
-    source  => "puppet://$servername/modules/base/login.defs",
+    source  => "puppet:///modules/base/login.defs",
   }
 
   # Sudo configuration.
@@ -64,7 +73,7 @@ class base {
     owner   => root,
     group   => root,
     mode    => 440,
-    source  => "puppet://$servername/modules/base/sudoers",
+    source  => "puppet:///modules/base/sudoers",
     require => Package["sudo"],
   }
 
@@ -79,7 +88,7 @@ class base {
     require => Package["openssh-server"]
   }
   file { "/etc/ssh/sshd_config":
-    source => "puppet://$servername/modules/base/sshd_config",
+    source => "puppet:///modules/base/sshd_config",
     require => Package["openssh-server"],
     notify => Service["ssh"]
   }

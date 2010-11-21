@@ -70,7 +70,7 @@ class testing_bot {
     notify  => Service["mysql"],
   }
 
-  package { ["drupaltestbot", "drush", "apache2", "libapache2-mod-php5", "curl", "cvs"]:
+  package { ["drush", "apache2", "libapache2-mod-php5", "curl", "cvs"]:
     ensure => present,
     require => [ Base::Apt::Repository["drupal.org"], Base::Apt::Repository["php53"], Service["mysql"] ],
   }
@@ -118,24 +118,28 @@ class testing_bot {
     require => Package["php5-cli"],
   }
 
+  package { "drupaltestbot":
+    ensure => "0.0.3",
+  }
+
   class mysql {
     package { "drupaltestbot-mysql":
       ensure => present,
-      require => [ Base::Apt::Repository["drupal.org"], Service["mysql"] ]
+      require => [ Base::Apt::Repository["drupal.org"], Package["drupaltestbot"], Service["mysql"] ]
     }
   }
 
   class pgsql {
     package { "drupaltestbot-pgsql":
       ensure => present,
-      require => Base::Apt::Repository["drupal.org"],
+      require => [ Base::Apt::Repository["drupal.org"], Package["drupaltestbot"] ]
     }
   }
 
   class sqlite3 {
     package { "drupaltestbot-sqlite3":
       ensure => present,
-      require => Base::Apt::Repository["drupal.org"],
+      require => [ Base::Apt::Repository["drupal.org"], Package["drupaltestbot"] ]
     }
   }
 }
