@@ -1,12 +1,5 @@
 
 class testing_bot {
-  # Live dangerously.
-  base::apt::repository { "php53":
-    repository_source => "puppet://$servername/modules/testing_bot/php53.sources.list",
-    key_source => "puppet://$servername/modules/testing_bot/php53.public.key",
-    key_id => "A19A51A2",
-  }
-
   # Firewall configuration.
   firewall::rule::allow_servers { "http":
     protocol => tcp,
@@ -119,7 +112,7 @@ class testing_bot {
   }
 
   package { "drupaltestbot":
-    ensure => "0.0.3",
+    ensure => "0.0.4",
   }
 
   class mysql {

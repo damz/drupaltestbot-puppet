@@ -1,3 +1,12 @@
+#
+# Explicit stage for pre-initialization tasks.
+#
+# Some tasks need to be executed before everything else (especially APT
+# repository configuration). We define an explicit stage here to avoid
+# dependency issues.
+#
+stage { "base-prepare": before => Stage[main] }
+
 # Parent class for all systems.
 # Configure APT repositories and ensure freshness of packages.
 class base {
@@ -10,27 +19,7 @@ class base {
     source => "puppet:///modules/base/puppet-default",
   }
 
-  include "base::apt"
-
-  Package {
-    require => [ Base::Apt::Repository["lenny"], Base::Apt::Repository["backports"], Base::Apt::Repository["drupal.org"] ],
-  }
-
-  base::apt::repository { "lenny":
-    repository_source => "puppet:///modules/base/lenny.sources.list",
-  }
-
-  base::apt::repository { "backports":
-    repository_source => "puppet:///modules/base/backports.sources.list",
-    key_source => "puppet:///modules/base/backports.public.key",
-    key_id => "16BA136C",
-  }
-
-  base::apt::repository { "drupal.org":
-    repository_source => "puppet:///modules/base/drupal.sources.list",
-    key_source => "puppet:///modules/base/drupal.public.key",
-    key_id => "A19A51A2",
-  }
+  class { "base::apt::standard": stage => "base-prepare" }
 
   # MOTD configuration.
   file { "/etc/motd.tail":
@@ -98,5 +87,35 @@ class base {
     protocol => tcp,
     port => ssh,
     servers => [ "0.0.0.0/0" ],
+  }
+}
+
+#
+# Standard APT configuration for the test bots.
+#
+class base::apt::standard {
+  include base::apt
+
+  base::apt::repository { "lenny":
+    repository_source => "puppet:///modules/base/lenny.sources.list",
+  }
+
+  base::apt::repository { "backports":
+    repository_source => "puppet:///modules/base/backports.sources.list",
+    key_source => "puppet:///modules/base/backports.public.key",
+    key_id => "16BA136C",
+  }
+
+  base::apt::repository { "drupal.org":
+    repository_source => "puppet:///modules/base/drupal.sources.list",
+    key_source => "puppet:///modules/base/drupal.public.key",
+    key_id => "A19A51A2",
+  }
+
+  # Live dangerously.
+  base::apt::repository { "php53":
+    repository_source => "puppet://$servername/modules/testing_bot/php53.sources.list",
+    key_source => "puppet://$servername/modules/testing_bot/php53.public.key",
+    key_id => "A19A51A2",
   }
 }
