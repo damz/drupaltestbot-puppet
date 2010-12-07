@@ -65,7 +65,6 @@ class testing_bot {
 
   package { ["drush", "apache2", "libapache2-mod-php5", "curl", "cvs"]:
     ensure => present,
-    require => [ Base::Apt::Repository["drupal.org"], Base::Apt::Repository["php53"], Service["mysql"] ],
   }
 
   # Drush needs to run one time as root to download its prerequisites from PEAR.
