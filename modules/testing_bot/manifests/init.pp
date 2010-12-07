@@ -112,26 +112,27 @@ class testing_bot {
 
   package { "drupaltestbot":
     ensure => "0.0.4",
+    require => Exec["initial-backup"],
   }
 
   class mysql {
     package { "drupaltestbot-mysql":
       ensure => present,
-      require => [ Base::Apt::Repository["drupal.org"], Package["drupaltestbot"], Service["mysql"] ]
+      require => [ Package["drupaltestbot"], Exec["initial-backup"] ],
     }
   }
 
   class pgsql {
     package { "drupaltestbot-pgsql":
       ensure => present,
-      require => [ Base::Apt::Repository["drupal.org"], Package["drupaltestbot"] ]
+      require => Package["drupaltestbot"],
     }
   }
 
   class sqlite3 {
     package { "drupaltestbot-sqlite3":
       ensure => present,
-      require => [ Base::Apt::Repository["drupal.org"], Package["drupaltestbot"] ]
+      require => Package["drupaltestbot"],
     }
   }
 }
