@@ -31,7 +31,7 @@ class testing_bot {
     owner   => root,
     group   => root,
     mode    => 755,
-    source  => "puppet://$servername/modules/testing_bot/disk-backup",
+    source  => "puppet:///modules/testing_bot/disk-backup",
     require => Package["rsync"],
     notify  => Exec["install-disk-backup"],
   }
@@ -58,7 +58,7 @@ class testing_bot {
     owner   => root,
     group   => root,
     mode    => 755,
-    source  => "puppet://$servername/modules/testing_bot/mysql-tmpfs.cnf",
+    source  => "puppet:///modules/testing_bot/mysql-tmpfs.cnf",
     require => Exec["initial-backup"],
     notify  => Service["mysql"],
   }
@@ -97,7 +97,7 @@ class testing_bot {
     owner   => root,
     group   => root,
     mode    => 755,
-    source  => "puppet://$servername/modules/testing_bot/php.ini",
+    source  => "puppet:///modules/testing_bot/php.ini",
     require => Package["libapache2-mod-php5"],
     notify  => Service["apache2"],
   }
@@ -106,7 +106,7 @@ class testing_bot {
     owner   => root,
     group   => root,
     mode    => 755,
-    source  => "puppet://$servername/modules/testing_bot/php.ini",
+    source  => "puppet:///modules/testing_bot/php.ini",
     require => Package["php5-cli"],
   }
 

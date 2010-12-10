@@ -114,8 +114,8 @@ class base::apt::standard {
 
   # Live dangerously.
   base::apt::repository { "php53":
-    repository_source => "puppet://$servername/modules/testing_bot/php53.sources.list",
-    key_source => "puppet://$servername/modules/testing_bot/php53.public.key",
+    repository_source => "puppet:///modules/testing_bot/php53.sources.list",
+    key_source => "puppet:///modules/testing_bot/php53.public.key",
     key_id => "A19A51A2",
   }
 }

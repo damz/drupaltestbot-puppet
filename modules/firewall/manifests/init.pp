@@ -8,22 +8,22 @@ class firewall {
     mode => 644,
   }
   file { "/etc/init.d/firewall":
-    source  => "puppet://$servername/modules/firewall/init.d/firewall",
+    source  => "puppet:///modules/firewall/init.d/firewall",
     mode => 755,
     notify => Service["firewall"]
   }
   file { "/etc/default/firewall":
-    source  => "puppet://$servername/modules/firewall/default/firewall",
+    source  => "puppet:///modules/firewall/default/firewall",
   }
   file { "/etc/firewall.d":
     ensure => "directory",
   }
   file { "/etc/firewall.d/00clear":
-    source  => "puppet://$servername/modules/firewall/firewall.d/00clear",
+    source  => "puppet:///modules/firewall/firewall.d/00clear",
     mode => 755,
   }
   file { "/etc/firewall.d/05policies":
-    source  => "puppet://$servername/modules/firewall/firewall.d/05policies",
+    source  => "puppet:///modules/firewall/firewall.d/05policies",
     mode => 755,
   }
 

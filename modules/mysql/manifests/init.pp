@@ -20,7 +20,7 @@ class mysql {
       owner   => root,
       group   => root,
       mode    => 755,
-      source  => "puppet://$servername/modules/mysql/my.cnf",
+      source  => "puppet:///modules/mysql/my.cnf",
       require => Package["mariadb-server-5.1"],
       notify  => Service["mysql"],
     }
@@ -29,7 +29,7 @@ class mysql {
       owner   => root,
       group   => root,
       mode    => 755,
-      source  => "puppet://$servername/modules/mysql/tuning.cnf",
+      source  => "puppet:///modules/mysql/tuning.cnf",
       require => Package["mariadb-server-5.1"],
       notify  => Service["mysql"],
     }
