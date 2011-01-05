@@ -1,12 +1,5 @@
 
 class testing_bot {
-  # Live dangerously.
-  base::apt::repository { "php53":
-    repository_source => "puppet://$servername/modules/testing_bot/php53.sources.list",
-    key_source => "puppet://$servername/modules/testing_bot/php53.public.key",
-    key_id => "A19A51A2",
-  }
-
   # Firewall configuration.
   firewall::rule::allow_servers { "http":
     protocol => tcp,
@@ -101,6 +94,11 @@ class testing_bot {
     require => Package["php5-cli"],
   }
 
+  package { "drupaltestbot":
+    ensure => "0.0.4",
+    require => Exec["initial-backup"],
+  }
+
   class mysql {
     # Move MySQL's data directory to the tmpfs.
     file { "/etc/mysql/conf.d/tmpfs.cnf":
@@ -122,7 +120,7 @@ class testing_bot {
 
     package { "drupaltestbot-mysql":
       ensure => present,
-      require => [ Base::Apt::Repository["drupal.org"], Service["mysql"] ]
+      require => [ Package["drupaltestbot"], Exec["initial-backup"] ],
     }
   }
 
@@ -138,14 +136,14 @@ class testing_bot {
 
     package { "drupaltestbot-pgsql":
       ensure => present,
-      require => Base::Apt::Repository["drupal.org"],
+      require => Package["drupaltestbot"],
     }
   }
 
   class sqlite3 {
     package { "drupaltestbot-sqlite3":
       ensure => present,
-      require => Base::Apt::Repository["drupal.org"],
+      require => Package["drupaltestbot"],
     }
   }
 }
