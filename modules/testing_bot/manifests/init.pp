@@ -95,7 +95,7 @@ class testing_bot {
   }
 
   package { "drupaltestbot":
-    ensure => "0.0.4",
+    ensure => "0.0.5",
   }
 
   class mysql {
