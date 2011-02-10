@@ -5,8 +5,8 @@
 # repository configuration). We define an explicit stage here to avoid
 # dependency issues.
 #
-stage { "base-prealable": before => Stage[base-prepare] }
 stage { "base-prepare": before => Stage[main] }
+stage { "base-prealable": before => Stage[base-prepare] }
 
 # Parent class for all systems.
 # Configure APT repositories and ensure freshness of packages.
@@ -89,6 +89,17 @@ class base {
     protocol => tcp,
     port => ssh,
     servers => [ "0.0.0.0/0" ],
+  }
+}
+
+class base::apt_prepare {
+  exec { "apt-update":
+    command => "/usr/bin/apt-get update",
+  }
+
+  package { "debian-archive-keyring":
+    ensure => latest,
+    require => Exec["apt-update"],
   }
 }
 

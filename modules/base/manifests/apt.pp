@@ -1,15 +1,4 @@
 
-class base::apt_prepare {
-  exec { "apt-update":
-    command => "/usr/bin/apt-get update",
-  }
-
-  package { "debian-archive-keyring":
-    ensure => latest,
-    require => Exec["apt-update"],
-  }
-}
-
 class base::apt {
   file { "/etc/apt/apt.conf.d/01recommend":
     content => 'APT::Install-Recommends "0"; APT::Install-Suggests "0";'
