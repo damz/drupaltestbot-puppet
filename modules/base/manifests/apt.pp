@@ -1,4 +1,15 @@
 
+class base::apt_prepare {
+  exec { "apt-update":
+    command => "/usr/bin/apt-get update",
+  }
+
+  package { "debian-archive-keyring":
+    ensure => latest,
+    require => Exec["apt-update"],
+  }
+}
+
 class base::apt {
   file { "/etc/apt/apt.conf.d/01recommend":
     content => 'APT::Install-Recommends "0"; APT::Install-Suggests "0";'
@@ -11,12 +22,6 @@ class base::apt {
   }
   file { "/etc/apt/sources.list":
     ensure => absent,
-  }
-
-  exec { "apt-update":
-    command => "/usr/bin/apt-get update",
-    require => [ File["/etc/apt/apt.conf.d/01recommend"], File["/etc/apt/sources.list"], File["/etc/apt/sources.list.d"] ],
-    refreshonly => true,
   }
 
   define repository($repository_source, $key_source = '', $key_id = '', $ensure = 'present') {
