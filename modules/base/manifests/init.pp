@@ -5,6 +5,7 @@
 # repository configuration). We define an explicit stage here to avoid
 # dependency issues.
 #
+stage { "base-prealable": before => Stage[base-prepare] }
 stage { "base-prepare": before => Stage[main] }
 
 # Parent class for all systems.
@@ -19,6 +20,7 @@ class base {
     source => "puppet:///modules/base/puppet-default",
   }
 
+  class { "base::apt_prepare": stage => "base-prealable" }
   class { "base::apt::standard": stage => "base-prepare" }
 
   # MOTD configuration.
