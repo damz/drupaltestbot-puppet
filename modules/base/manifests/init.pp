@@ -95,6 +95,7 @@ class base {
 class base::apt_prepare {
   exec { "apt-update":
     command => "/usr/bin/apt-get update",
+    loglevel => debug,
   }
 
   package { "debian-archive-keyring":
