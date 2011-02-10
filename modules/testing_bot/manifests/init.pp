@@ -84,6 +84,11 @@ class testing_bot {
     require => Base::Apt::Repository["php53"],
     notify => Service["apache2"],
   }
+  
+  package { "git-core":
+    ensure => present,
+    require => Base::Apt::Repository["backports"],
+  }
 
   # Enable the rewrite module.
   exec { "a2enmod-rewrite":
