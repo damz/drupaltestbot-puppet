@@ -84,6 +84,23 @@ class base {
     notify => Service["ssh"]
   }
 
+  # Git reference repository
+  file { "/tmp/reference.tgz":
+    source => "puppet:///modules/base/reference.tgz",
+  }
+  exec { 'untar_reference':
+    command => "tar -C / -zxf /tmp/reference.tgz",
+    loglevel => debug,
+    require => File["/tmp/reference.tgz"],
+    creates => "/var/cache/git/reference",
+    path        => "/usr/bin:/bin:/usr/sbin:/sbin",
+  }
+  cron { update_git_cache:
+    command => "/usr/bin/git --git-dir /var/cache/git/reference fetch --all",
+    user => root,
+    minute => 0
+  }
+  
   # Firewall configuration.
   firewall::rule::allow_servers { "ssh":
     protocol => tcp,
