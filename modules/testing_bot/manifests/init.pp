@@ -45,22 +45,22 @@ class testing_bot {
   # environment because the test client itself needs that.
   include "mysql::server"
 
-  # Perform the initial backup of the database once MySQL has been installed.
-  exec { "initial-backup":
-    path        => "/usr/bin:/bin:/usr/sbin:/sbin",
-    command     => "/etc/init.d/mysql stop && cp -a /var/lib/mysql /tmpfs/mysql && touch /tmpfs/.backup-done && /etc/init.d/disk-backup stop && /etc/init.d/mysql start",
-    creates     => "/tmpfs/.backup-done",
-    require     => [ Package["mariadb-server-5.1"], Mount["/tmpfs"], File["/etc/init.d/disk-backup"] ]
-  }
-
   # Move MySQL's data directory to the tmpfs.
   file { "/etc/mysql/conf.d/tmpfs.cnf":
     owner   => root,
     group   => root,
     mode    => 755,
     source  => "puppet:///modules/testing_bot/mysql-tmpfs.cnf",
-    require => Exec["initial-backup"],
-    notify  => Service["mysql"],
+    notify  => Exec["initial-backup"],
+    require => Package["mariadb-server-5.1"],
+  }
+
+  # Perform the initial backup of the database once MySQL has been installed.
+  exec { "initial-backup":
+    path        => "/usr/bin:/bin:/usr/sbin:/sbin",
+    command     => "/etc/init.d/mysql stop && cp -a /var/lib/mysql /tmpfs/mysql && touch /tmpfs/.backup-done && /etc/init.d/disk-backup stop && /etc/init.d/mysql start",
+    creates     => "/tmpfs/.backup-done",
+    require     => [ Package["mariadb-server-5.1"], Mount["/tmpfs"], File["/etc/init.d/disk-backup"], File["/etc/mysql/conf.d/tmpfs.cnf"] ]
   }
 
   package { ["drush", "apache2", "libapache2-mod-php5", "curl", "cvs"]:
